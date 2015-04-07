@@ -15,25 +15,19 @@ Then, within PEPS, create a new application.
 
 ![Screenshot goes here]()
 
-By default, PEPS will export the app parameters to `/etc/peps/apps` which will enable you to directly launch PEPS Chat from the same machine without command line arguments.
+By default, PEPS will export the application parameters to `/etc/peps/apps/{appname}` which will enable you to directly launch PEPS Chat from the same machine without command line arguments.
 
-The next step is to generate the consumer key on the PEPS website.  Login as
-`admin` and go to the page `Admin/Apps`.  Enter a name for the application
-(usually "chat").
+The next step is to generate the consumer key on the PEPS website. Login as `admin` and go to the page `Admin/Apps`.  Enter a name for the application (usually "chat").
 
-The provider field should be a valid URI which is a prefix of your OpaChat deployment callback URI or simply `*`
-which means that the provider check is effectively disabled.  Click on `CREATE
-APP` to generate the key and make a note of the `Key` and `Secret` fields which
-have been generated.  Note that the `Name` value can be anything but it must
-match the value provided to the OpaChat program.
+The link should be the URI of your OpaChat deployment. Click on `CREATE APP` to generate the key. If the OpaChat server is running on the same machine, OpaChat will be able to automatically retrieve its configuration parameters. If not, you will have to pass the `Key` and `Secret` fields as arguments of the OpaChat deployment.
 
 # Command line configuration
 
 If you run PEPS Chat from a different host, or if you can't give access to `/etc/peps`, you will need to pass arguments manually to PEPS Chat:
 To run the chat program, type something like:
 
-    ./opa_chat.js --db-remote:opa_chat localhost:27017 \
-                  --db-remote:opa_share localhost:27017 \
+    ./opa_chat.js --db-remote:opachat localhost:27017 \
+                  --db-remote:opashare localhost:27017 \
                   --port 8080 \
                   --host http://localhost:8080 \
                   --sso-host localhost:4443 \
