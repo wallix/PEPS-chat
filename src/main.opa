@@ -1,7 +1,22 @@
-/**
- * Copyright © 2012-2014 MLstate
- * All rights reserved.
+/*
+ * PEPS is a modern collaboration server
+ * Copyright (C) 2015 MLstate
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 
 import stdlib.system
 import stdlib.themes.bootstrap
@@ -30,9 +45,6 @@ database opachat {
   Message.t /messages[{id}]
   Room.t /rooms[{id}]
   User.t /users[{id}]
-  #<Ifstatic:ADMIN_PAGE>
-  settings /settings
-  #<End>
 }
 
 database /opachat/rooms[_]/secure = true
@@ -744,117 +756,6 @@ module MessageScroll {
 } // END MESSAGESCROLL
 
 
-#<Ifstatic:ADMIN_PAGE>
-
-/** {1} Admin settings. */
-
-settings defaultSettings = {
-  host: "localhost",
-  sso_host: "localhost",
-  consumer_key: "xxx",
-  consumer_secret: "yyy",
-  app_name: "peps_chat"
-}
-
-/** Change the chat settings. */
-client function saveSettings(settings oldSettings, _evt) {
-  host = Dom.get_value(#host)
-  sso_host = Dom.get_value(#sso_host)
-  consumer_key = Dom.get_value(#consumer_key)
-  consumer_secret = Dom.get_value(#consumer_secret)
-  app_name = Dom.get_value(#app_name)
-  newSettings = ~{host, sso_host, consumer_key, consumer_secret, app_name}
-  #admin_error = <></>
-  if (newSettings != oldSettings) {
-    doSaveSettings(getLocalKey(), newSettings)
-    #admin_error = <div class="alert alert-info">Admin settings updated</div>
-  }
-}
-
-/**
- * Update the settings. The active user must have admin
- * status in order to validate this operation.
- */
-exposed function doSaveSettings(string localKey, settings newSettings) {
-  user = AuthorAccess.getCurrent(localKey)
-  if (AuthorAccess.is_admin(user))
-    /opachat/settings <- newSettings
-}
-
-function settingsForm(settings) {
-  <h4>Settings</h4>
-  <div>
-    <div id=#admin>
-      <div>
-        <label for="host">Host</label>
-        <input id=#host type="text"
-            placeholder="Host" autofocus="autofocus"
-            value="{settings.host}"
-            size=50 class="form-control"
-            onready={function(_) { Dom.give_focus(#host) }}
-            onnewline={saveSettings(settings, _)}/>
-      </div>
-      <div>
-        <label for="sso_host">SSO Host</label>
-        <input id=#sso_host type="text"
-            placeholder="Members" value="{settings.sso_host}"
-            size=50 class="form-control"
-            onnewline={saveSettings(settings, _)}/>
-      </div>
-      <div>
-        <label for="consumer_key">Consumer Key</label>
-        <input id=#consumer_key type="text"
-            placeholder="Key" value="{settings.consumer_key}"
-            size=50 class="form-control"
-            onnewline={saveSettings(settings, _)}/>
-      </div>
-      <div>
-        <label for="consumer_secret">Consumer Secret</label>
-        <input id=#consumer_secret type="text"
-            placeholder="Secret" value="{settings.consumer_secret}"
-            size=50 class="form-control"
-            onnewline={saveSettings(settings, _)}/>
-      </div>
-      <div>
-        <label for="app_name">App Name</label>
-        <input id=#app_name type="text"
-            placeholder="Name" value="{settings.app_name}"
-            size=50 class="form-control"
-            onnewline={saveSettings(settings, _)}/>
-      </div>
-      <div>
-        <button class="btn btn-primary"
-            onclick={saveSettings(settings, _)}>
-          Update
-        </button>
-      </div>
-    </div>
-    <div id=#admin_error></div>
-  </div>
-}
-
-/** In case we need a button... */
-openSettings = goto("/admin", _)
-
-/** Admin settings. */
-function settings(_localKey, user) {
-  if (AuthorAccess.is_admin(user)) {
-    settings = ?/opachat/settings ? defaultSettings
-    #main = settingsForm(settings)
-  } else
-    #main =
-      <div class="alert alert-danger">
-        You must have admin status to change admin settings
-      </div>
-}
-
-/** Admin settings returned in a page. */
-function settingsPage() {
-  page = buildLoggedPage("/admin", settings)
-  Resource.full_page_with_doctype("Admin settings", {html5}, page, headers, {success}, [])
-}
-
-#<End>
 
 /** {1} Server launch. */
 
@@ -996,9 +897,6 @@ dispatcher = parser {
   case "/create/restricted": restrictedRoomCreatorPage()
   case "/create/named": namedRoomCreatorPage()
   case "/metrics/" room=Rule.ident: metrics(room)
-  #<Ifstatic:ADMIN_PAGE>
-  case "/admin": settingsPage()
-  #<End>
   // Default to front page.
   case _url=(.*): conversationsPage()
     // startPage(<></>)
