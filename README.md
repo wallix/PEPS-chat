@@ -2,9 +2,16 @@
 
 # About
 
-PEPS Chat is a multi-room chat for the PEPS platform that also supports individual conversations.
+PEPS Chat is a multi-channel chat application for the PEPS platform. PEPS chat provides:
 
-![Screenshot goes here]()
+- One-to-one chat
+- One-to-many chat
+- Chatrooms
+- End-to-end encryption
+
+![PEPS Chat can be displayed full screen or as a sidebar](https://cloud.githubusercontent.com/assets/808274/7677175/419fc85a-fd4a-11e4-86f1-216acbadc341.png)
+
+PEPS Chat was developed for the [OPTET](http://optet.eu) FP7 project.
 
 # Installation
 
