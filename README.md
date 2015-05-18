@@ -16,9 +16,7 @@ PEPS Chat was developed for the [OPTET](http://optet.eu) FP7 project.
 PEPS Chat is not a standalone application, but an add-on to PEPS.
 You first need to [install PEPS](https://github.com/MLstate/PEPS) from its repository and run it on your server or test machine.
 
-Then, within PEPS, create a new application.
-
-![Screenshot goes here]()
+Then, within PEPS, create a new application as [described in the manual](https://github.com/MLstate/PEPS/wiki/Admin-Manual#adding-applications).
 
 By default, PEPS will export the application parameters to `/etc/peps/apps/{appname}` which will enable you to directly launch PEPS Chat from the same machine without command line arguments.
 
