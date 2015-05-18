@@ -1,6 +1,4 @@
-% PEPS Chat
-
-# About
+# About PEPS Chat
 
 PEPS Chat is a multi-channel chat application for the PEPS platform. PEPS chat provides:
 
