@@ -30,7 +30,7 @@ COMPILOPT =
 
 # Compiler variables
 export OPACOMPILER ?= opa
-MINIMAL_VERSION = 4419
+MINIMAL_VERSION = 4
 FLAG = --minimal-version $(MINIMAL_VERSION)
 
 # Build exe

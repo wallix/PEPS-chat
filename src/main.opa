@@ -874,10 +874,10 @@ protected function downloadFile(int id) {
 }
 
 /** Access metrics. */
-function metrics(string room) {
+function metrics(string room, option(string) timestamp) {
   match (Room.find({named: room})) {
     case {some: room}:
-      messages = Metric.fetch(room.id, 10, 0)
+      messages = Metric.fetch(room.id, 255, 0, timestamp)
       RPC.Json.json json = {List: List.map(Metric.toJson, messages)}
       Resource.json(json)
     case {none}:
@@ -896,7 +896,7 @@ dispatcher = parser {
   case "/access/" room=Rule.ident: roomAccessPage(room)
   case "/create/restricted": restrictedRoomCreatorPage()
   case "/create/named": namedRoomCreatorPage()
-  case "/metrics/" room=Rule.ident: metrics(room)
+  case "/metrics/" room=Rule.ident "/"? timestamp=Rule.ident? : metrics(room, timestamp)
   // Default to front page.
   case _url=(.*): conversationsPage()
     // startPage(<></>)

@@ -87,12 +87,30 @@ module Metric {
     log(room, ~{badlogin, ip})
   }
 
+  date_format = "%Y%m%d%H%M%S%x"
+  date_scanner = Date.generate_scanner(date_format)
+
   /** Fetch metrics from the database. */
-  function list(Metric.t) fetch(Room.id room, int limit, int skip) {
-    DbSet.iterator(/opametric/metrics[
-      room == room; limit limit;
-      skip skip; order -date
-    ]) |> Iter.to_list
+  function list(Metric.t) fetch(Room.id room, int limit, int skip, option(string) timestamp) {
+    (match (timestamp) {
+      case {none}:
+        DbSet.iterator(/opametric/metrics[
+          room == room; limit limit;
+          skip skip; order -date
+        ])
+      case ~{some}:
+        date = Date.of_formatted_string(date_scanner, some)
+        match (date) {
+          case {some: date}:
+            DbSet.iterator(/opametric/metrics[
+              room == room and date >= date;
+              order -date
+            ])
+          default:
+            Log.notice("error", "timestamp invalid")
+            Iter.empty
+        }
+    }) |> Iter.to_list
   }
 
   /** Transform a metric into JSON format. */
