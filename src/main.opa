@@ -26,7 +26,7 @@ import stdlib.themes.bootstrap
 GITHUB_USER = "MLstate"
 GITHUB_REPO = "OpaChat"
 PEPS_DIR = "/etc/peps"
-NB_LAST_MSGS = 10
+NB_LAST_MSGS = 255
 
 /** {1} Types. */
 
@@ -875,14 +875,17 @@ protected function downloadFile(int id) {
 
 /** Access metrics. */
 function metrics(string room, option(string) timestamp) {
-  match (Room.find({named: room})) {
-    case {some: room}:
-      messages = Metric.fetch(room.id, 255, 0, timestamp)
-      RPC.Json.json json = {List: List.map(Metric.toJson, messages)}
-      Resource.json(json)
-    case {none}:
-      Resource.json({Record:[("error", {String: "Room {room} does not exist"})]})
-  }
+  Resource.json(
+    match (Room.find({named: room})) {
+      case {some: room}:
+        messages = Metric.fetch(room.id, NB_LAST_MSGS, 0, timestamp)
+        RPC.Json.json {List: List.map(Metric.toJson, messages)}
+      case {none}:
+        // if room does not exist, we return an empty list
+        RPC.Json.json { List: [] }
+        // Resource.json({Record:[("error", {String: "Room {room} does not exist"})]})
+    }
+  )
 }
 
 /** Global dispatcher. */
